@@ -1,0 +1,43 @@
+Program
+  List
+    FuncDesc
+      IdDecl ID="basefunc"
+      List
+      Block
+        List
+          VarDeclStmt
+            IdDecl ID="a"
+            Opt
+          AssignStmt
+            IdUse ID="a"
+            Minus
+              ParenExpr
+                Gt
+                  IdUse ID="b"
+                  IdUse ID="c"
+              Numeral NUMERAL="10"
+          AssignStmt
+            IdUse ID="a"
+            Mul
+              ParenExpr
+                Gt
+                  IdUse ID="b"
+                  IdUse ID="c"
+              IdUse ID="x"
+          AssignStmt
+            IdUse ID="a"
+            Div
+              IdUse ID="x"
+              UnaryMinus
+                ParenExpr
+                  Eq
+                    IdUse ID="b"
+                    IdUse ID="c"
+          IfStmt
+            IdUse ID="b"
+            Block
+              List
+                AssignStmt
+                  IdUse ID="a"
+                  Numeral NUMERAL="3"
+            Opt

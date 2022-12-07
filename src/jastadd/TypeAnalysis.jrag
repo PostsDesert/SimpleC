@@ -1,0 +1,92 @@
+aspect TypeAnalysis {
+
+    syn Type Expr.type();
+
+    eq Numeral.type() = intType();
+    eq IdUse.type() = decl().type();
+    eq FuncCall.type() = getIdUse().type();
+
+    syn Type IdDecl.type() = intType();
+
+    eq Mul.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? intType() : unknownType();
+    eq Div.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? intType() : unknownType();
+    eq Mod.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? intType() : unknownType();
+    eq Plus.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? intType() : unknownType();
+    eq Minus.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? intType() : unknownType();
+
+    eq Eq.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? boolType() : unknownType();
+    eq Neq.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? boolType() : unknownType();
+    eq Leq.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? boolType() : unknownType();
+    eq Geq.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? boolType() : unknownType();
+    eq Lt.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? boolType() : unknownType();
+    eq Gt.type() = getLeft().type().isIntType() && getRight().type().isIntType() ? boolType() : unknownType();
+
+    eq ParenExpr.type() = getExpr().type().isIntType() ? intType() : unknownType();
+    eq UnaryMinus.type() = getExpr().type().isIntType() ? intType() : unknownType();
+
+
+    inh Type Expr.expectedType();
+    eq FuncCallStmt.getFuncCall().expectedType() = intType();
+    eq VarDeclStmt.getExpr().expectedType() = intType();
+    eq AssignStmt.getFrom().expectedType() = intType();
+    eq WhileStmt.getExpr().expectedType() = boolType();
+    eq IfStmt.getExpr().expectedType() = boolType();
+    eq ReturnStmt.getExpr().expectedType() = intType();
+
+
+    syn boolean Type.compatibleType(Type t) {
+        return this.equals(t) || isUnknownType() || t.isUnknownType();
+    }
+
+    syn boolean VarDeclStmt.compatibleType() {
+        if(hasExpr()) {
+            return getExpr().expectedType().compatibleType(getExpr().type());
+        }
+        return true;
+    }
+
+    syn boolean AssignStmt.compatibleType() = getFrom().expectedType().compatibleType(getFrom().type());
+    syn boolean WhileStmt.compatibleType() = getExpr().expectedType().compatibleType(getExpr().type());
+    syn boolean IfStmt.compatibleType() = getExpr().expectedType().compatibleType(getExpr().type());
+    syn boolean ReturnStmt.compatibleType() = getExpr().expectedType().compatibleType(getExpr().type());
+
+    inh boolean IdDecl.isVariable();
+    inh boolean IdDecl.isFunction();
+    inh FuncDesc IdDecl.function();
+
+    syn boolean FuncCall.isFunction() {
+        IdDecl dec = getIdUse().decl();
+        return !dec.isUnknown() ? dec.isFunction() : true;
+    }
+
+    eq AssignStmt.getTo().isVariable() = true;
+    eq AssignStmt.getTo().isFunction() = false;
+
+    eq VarDeclStmt.getIdDecl().isVariable() = true;
+    eq VarDeclStmt.getIdDecl().isFunction() = false;
+
+    syn boolean IdUse.isFunction() = decl().isFunction();
+    syn boolean IdUse.isVariable() = decl().isFunction();
+    syn FuncDesc IdUse.function() = decl().function();
+
+    eq FuncDesc.getFuncId().isVariable() = false;
+    eq FuncDesc.getFuncId().isFunction() = true;
+    eq FuncDesc.getFuncId().function() = this;
+
+    eq FuncDesc.getParamId().isVariable() = false;
+    eq FuncDesc.getParamId().isFunction() = false;
+
+    syn boolean FuncCall.correctNumParameter()
+        = getNumExpr() == getIdUse().decl().function().getNumParamId();
+
+    syn boolean FuncCall.correctTypeParameter() {
+        if(hasExpr()) {
+            for(Expr expr : getExprs()) {
+                if(!expr.type().compatibleType(intType())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}

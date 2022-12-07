@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="lang.TestNameAnalysis" tests="9" skipped="0" failures="0" errors="0" timestamp="2022-10-12T11:53:32" hostname="G-MacBook-Pro.local" time="0.028">
+  <properties/>
+  <testcase name="runTest[DeclareBeforeUse.in]" classname="lang.TestNameAnalysis" time="0.006"/>
+  <testcase name="runTest[SimpleCorrect.in]" classname="lang.TestNameAnalysis" time="0.001"/>
+  <testcase name="runTest[RedeclareLocalInner.in]" classname="lang.TestNameAnalysis" time="0.004"/>
+  <testcase name="runTest[A2-31NonTypeCorrect.in]" classname="lang.TestNameAnalysis" time="0.005"/>
+  <testcase name="runTest[RedeclaredVar.in]" classname="lang.TestNameAnalysis" time="0.005"/>
+  <testcase name="runTest[IncorrectNumParametersInFuncCall.in]" classname="lang.TestNameAnalysis" time="0.002"/>
+  <testcase name="runTest[Undeclared.in]" classname="lang.TestNameAnalysis" time="0.002"/>
+  <testcase name="runTest[circularDef.in]" classname="lang.TestNameAnalysis" time="0.001"/>
+  <testcase name="runTest[IncorrectStmtTypes.in]" classname="lang.TestNameAnalysis" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

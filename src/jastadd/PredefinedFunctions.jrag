@@ -1,0 +1,8 @@
+ aspect PredefinedFunctions {
+ 	syn nta List<FuncDesc> Program.getPredefinedFunctions() {
+ 		List<FuncDesc> list = new List<FuncDesc>();
+ 		list.add(new FuncDesc(new IdDecl("read"), new List(), new Block(new List())));
+ 		list.add(new FuncDesc(new IdDecl("print"), new List(new IdDecl("output")), new Block(new List())));
+ 		return list;
+ 	}
+ }

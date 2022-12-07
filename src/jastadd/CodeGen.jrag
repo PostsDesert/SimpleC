@@ -1,0 +1,377 @@
+/**
+ * Modifed from Simple code generation for the Calc language (EDAN65 course labs).
+ * @author Jesper Öqvist
+ * @author Griffith Baker
+ */
+aspect CodeGen {
+
+  public void Program.genCode(PrintStream out) {
+    out.println(".global _start");
+    out.println(".data");
+    out.println("buf: .skip 1024");
+    out.println();
+    out.println(".text");
+    out.println("_start:");
+
+    // call main function
+    out.println("        call main");
+
+    // Call sys_exit:
+    out.println("        movq $0, %rdi");
+    out.println("        movq $60, %rax");
+    out.println("        syscall"); // Done!
+
+    // Print code gen for program
+    for (FuncDesc func : getFuncDescList()) {
+        func.genCode(out);
+    }
+
+    // Helper procedures for input/output:
+    out.println("# Procedure to print number to stdout.");
+    out.println("# C signature: void print(long int)");
+    out.println("print:");
+    out.println("        pushq %rbp");
+    out.println("        movq %rsp, %rbp");
+    out.println("        ### Convert integer to string (itoa).");
+    out.println("        movq 16(%rbp), %rax");
+    out.println("        leaq buf(%rip), %rsi    # RSI = write pointer (starts at end of buffer)");
+    out.println("        addq $1023, %rsi");
+    out.println("        movb $0x0A, (%rsi)      # insert newline");
+    out.println("        movq $1, %rcx           # RCX = string length");
+    out.println("        cmpq $0, %rax");
+    out.println("        jge itoa_loop");
+    out.println("        negq %rax               # negate to make RAX positive");
+    out.println("itoa_loop:                      # do.. while (at least one iteration)");
+    out.println("        movq $10, %rdi");
+    out.println("        movq $0, %rdx");
+    out.println("        idivq %rdi              # divide RDX:RAX by 10");
+    out.println("        addb $0x30, %dl         # remainder + '0'");
+    out.println("        decq %rsi               # move string pointer");
+    out.println("        movb %dl, (%rsi)");
+    out.println("        incq %rcx               # increment string length");
+    out.println("        cmpq $0, %rax");
+    out.println("        jg itoa_loop            # produce more digits");
+    out.println("itoa_done:");
+    out.println("        movq 16(%rbp), %rax");
+    out.println("        cmpq $0, %rax");
+    out.println("        jge print_end");
+    out.println("        decq %rsi");
+    out.println("        incq %rcx");
+    out.println("        movb $0x2D, (%rsi)");
+    out.println("print_end:");
+    out.println("        movq $1, %rdi");
+    out.println("        movq %rcx, %rdx");
+    out.println("        movq $1, %rax");
+    out.println("        syscall");
+    out.println("        popq %rbp");
+    out.println("        ret");
+    out.println("");
+    out.println("# Procedure to read number from stdin.");
+    out.println("# C signature: long long int read(void)");
+    out.println("read:");
+    out.println("        pushq %rbp");
+    out.println("        movq %rsp, %rbp");
+    out.println("        ### R9  = sign");
+    out.println("        movq $1, %r9            # sign <- 1");
+    out.println("        ### R10 = sum");
+    out.println("        movq $0, %r10           # sum <- 0");
+    out.println("skip_ws: # skip any leading whitespace");
+    out.println("        movq $0, %rdi");
+    out.println("        leaq buf(%rip), %rsi");
+    out.println("        movq $1, %rdx");
+    out.println("        movq $0, %rax");
+    out.println("        syscall                 # get one char: sys_read(0, buf, 1)");
+    out.println("        cmpq $0, %rax");
+    out.println("        jle atoi_done           # nchar <= 0");
+    out.println("        movb (%rsi), %cl        # c <- current char");
+    out.println("        cmp $32, %cl");
+    out.println("        je skip_ws              # c == space");
+    out.println("        cmp $13, %cl");
+    out.println("        je skip_ws              # c == CR");
+    out.println("        cmp $10, %cl");
+    out.println("        je skip_ws              # c == NL");
+    out.println("        cmp $9, %cl");
+    out.println("        je skip_ws              # c == tab");
+    out.println("        cmp $45, %cl            # check if negative");
+    out.println("        jne atoi_loop");
+    out.println("        movq $-1, %r9           # sign <- -1");
+    out.println("        movq $0, %rdi");
+    out.println("        leaq buf(%rip), %rsi");
+    out.println("        movq $1, %rdx");
+    out.println("        movq $0, %rax");
+    out.println("        syscall                 # get one char: sys_read(0, buf, 1)");
+    out.println("atoi_loop:");
+    out.println("        cmpq $0, %rax           # while (nchar > 0)");
+    out.println("        jle atoi_done           # leave loop if nchar <= 0");
+    out.println("        movzbq (%rsi), %rcx     # move byte, zero extend to quad-word");
+    out.println("        cmpq $0x30, %rcx        # test if < '0'");
+    out.println("        jl atoi_done            # character is not numeric");
+    out.println("        cmpq $0x39, %rcx        # test if > '9'");
+    out.println("        jg atoi_done            # character is not numeric");
+    out.println("        imulq $10, %r10         # multiply sum by 10");
+    out.println("        subq $0x30, %rcx        # value of character");
+    out.println("        addq %rcx, %r10         # add to sum");
+    out.println("        movq $0, %rdi");
+    out.println("        leaq buf(%rip), %rsi");
+    out.println("        movq $1, %rdx");
+    out.println("        movq $0, %rax");
+    out.println("        syscall                 # get one char: sys_read(0, buf, 1)");
+    out.println("        jmp atoi_loop           # loop back");
+    out.println("atoi_done:");
+    out.println("        imulq %r9, %r10         # sum *= sign");
+    out.println("        movq %r10, %rax         # put result value in RAX");
+    out.println("        popq %rbp");
+    out.println("        ret");
+    out.println();
+    out.println("print_string:");
+    out.println("        pushq %rbp");
+    out.println("        movq %rsp, %rbp");
+    out.println("        movq $1, %rdi");
+    out.println("        movq 16(%rbp), %rsi");
+    out.println("        movq 24(%rbp), %rdx");
+    out.println("        movq $1, %rax");
+    out.println("        syscall");
+    out.println("        popq %rbp");
+    out.println("        ret");
+  }
+
+  public void FuncDesc.genCode(PrintStream out) {
+    out.println(getFuncId().getID() + ":");
+    // Allocate space for local variables:
+    out.println("        pushq %rbp");
+    out.println("        movq %rsp, %rbp");
+    out.println("        subq $" + (numLocals() * 8) + ", %rsp");
+    getBlock().genCode(out);
+  }
+
+  public void Block.genCode(PrintStream out) {
+    for (Stmt stmt : getStmtList()) {
+      stmt.genCode(out);
+    }
+  }
+
+  // Statements
+  // abstract public void Stmt.genCode(PrintStream out);
+  public void Stmt.genCode(PrintStream out) {}
+
+  public void FuncCallStmt.genCode(PrintStream out) {
+    getFuncCall().genCode(out);
+  }
+
+  public void ReturnStmt.genCode(PrintStream out){
+    getExpr().genCode(out);
+    // De-allocate local variables
+    out.println("        addq $" + (numLocals() * 8) + ", %rsp"); //dealloc space for local vars
+    out.println("        movq %rbp, %rsp");
+    out.println("        popq %rbp");
+    out.println("        ret");
+  }
+
+  public void IfStmt.genCode(PrintStream out) {
+    out.println("        # IfStmt Start");
+    getExpr().genConditionalFlags(out);
+
+    String labelEnd = "fi_" + enclosingFunction().getFuncId().getID() + "_" + getTrue().uniquePrefix();
+    if (hasFalse()) {
+      String labelFalse = "else_" + enclosingFunction().getFuncId().getID() + "_" + getTrue().uniquePrefix();
+      getExpr().genConditionalJump(out, labelFalse);
+      getTrue().genCode(out);
+      out.println("        jmp " + labelEnd);
+      out.println(labelFalse + ":");
+      getFalse().genCode(out);
+    } else {
+      getExpr().genConditionalJump(out, labelEnd);
+      getTrue().genCode(out);
+    }
+    out.println(labelEnd + ":");
+  }
+
+  public void WhileStmt.genCode(PrintStream out) {
+    String labelStart = "loop_start_" + enclosingFunction().getFuncId().getID() + "_" + getBlock().uniquePrefix();
+    out.println(labelStart + ":");
+
+    getExpr().genConditionalFlags(out);
+
+    String labelEnd = "loop_end_" + enclosingFunction().getFuncId().getID() + "_" + getBlock().uniquePrefix();
+    getExpr().genConditionalJump(out, labelEnd);
+    getBlock().genCode(out);
+
+    out.println("        jmp " + labelStart);
+    out.println(labelEnd + ":");
+  }
+
+  public void AssignStmt.genCode(PrintStream out) {
+    getFrom().genCode(out);
+    out.println("        movq %rax, " + getTo().decl().address());
+  }
+
+  public void VarDeclStmt.genCode(PrintStream out) {
+    if(hasExpr()) {
+      getExpr().genCode(out);
+      out.println("        movq %rax, " + getIdDecl().address());
+    } else {
+      out.println("        movq $0, "+ getIdDecl().address());
+    }
+  }
+
+  // Expressions
+  // abstract public void Expr.genCode(PrintStream out);
+  public void Expr.genCode(PrintStream out) {}
+
+  public void FuncCall.genCode(PrintStream out) {
+    // Important to push on stack in reverse order
+    for (int i = (getNumExpr() - 1); i >= 0; i--) {
+      getExpr(i).genCode(out);
+      out.println("        pushq %rax");
+    }
+    out.println("        call " + getIdUse().decl().getID()); // Griffith maybe remove declare
+    out.println("        addq $" + (getNumExpr() * 8) + ", %rsp");
+  }
+
+  public void Mul.genCode(PrintStream out) {
+    getLeft().genCode(out);
+    out.println("        pushq %rax");
+    getRight().genCode(out);
+    out.println("        movq %rax, %rbx");
+    out.println("        popq %rax");
+    out.println("        imulq %rbx, %rax");
+  }
+
+  public void Div.genCode(PrintStream out) {
+    getLeft().genCode(out);
+    out.println("        pushq %rax");
+    getRight().genCode(out);
+    out.println("        movq %rax, %rbx");
+    out.println("        popq %rax");
+    out.println("        movq $0, %rdx");// NB: clear RDX to prepare division RDX:RAX / RBX
+    out.println("        idivq %rbx");
+  }
+
+  public void Plus.genCode(PrintStream out) {
+    getLeft().genCode(out);
+    out.println("        pushq %rax");
+    getRight().genCode(out);
+    out.println("        movq %rax, %rbx");
+    out.println("        popq %rax");
+    out.println("        addq %rbx, %rax");
+  }
+
+  public void Minus.genCode(PrintStream out) {
+    getLeft().genCode(out);
+    out.println("        pushq %rax");
+    getRight().genCode(out);
+    out.println("        movq %rax, %rbx");
+    out.println("        popq %rax");
+    out.println("        subq %rbx, %rax");
+  }
+
+  public void Mod.genCode(PrintStream out) {
+    out.println("        # Start Mod Opp");
+    getLeft().genCode(out);
+    out.println("        pushq %rax");
+    getRight().genCode(out);
+    out.println("        movq %rax, %rbx");
+    out.println("        popq %rax");
+    out.println("        movq $0, %rdx");// NB: clear RDX to prepare division RDX:RAX / RBX
+    out.println("        idivq %rbx");
+    out.println("        movq %rdx, %rax");
+    out.println("        # End Mod Opp");
+  }
+
+  public void UnaryMinus.genCode(PrintStream out) {
+    getExpr().genCode(out);
+    out.println("        negq %rax");
+  }
+
+  // Might be able to remove with abstract class
+  public void ParenExpr.genCode(PrintStream out) {
+    getExpr().genCode(out);
+  }
+
+  public void Expr.genConditionalJump(PrintStream out, String label) { }
+  public void Expr.genConditionalFlags(PrintStream out) { }
+
+  // Comparisons are inverted
+  public void CompExpr.genConditionalJump(PrintStream out, String label) {
+    out.println("        " + condJmp() + label);
+  }
+
+  syn String CompExpr.condJmp();
+  eq Eq.condJmp() = "jne ";
+  eq Neq.condJmp() = "je ";
+  eq Leq.condJmp() = "jg ";
+  eq Geq.condJmp() = "jl ";
+  eq Lt.condJmp() = "jge ";
+  eq Gt.condJmp() = "jle ";
+
+  public void CompExpr.genConditionalFlags(PrintStream out) {
+    getLeft().genCode(out);
+    out.println("        pushq %rax");
+    getRight().genCode(out);
+    out.println("        movq %rax, %rbx");
+    out.println("        popq %rax");
+    out.println("        cmpq %rbx, %rax");
+  }
+
+  public void Numeral.genCode(PrintStream out) {
+    out.println("        movq $" + getNUMERAL() + ", %rax");
+  }
+
+  public void IdUse.genCode(PrintStream out) {
+    out.println("        movq " + decl().address() + ", %rax");
+  }
+
+  /*
+  // Future: add support for "Int" type in while and for loops
+  public void BinaryExpr.genConditionalJump(PrintStream out, String label) {
+    out.println("        " + condJmp() + label);
+  }
+
+  syn String BinaryExpr.condJmp();
+  eq Mul.condJmp() = "jne ";
+  eq Div.condJmp() = "jne ";
+  eq Mod.condJmp() = "jne ";
+  eq Plus.condJmp() = "jne ";
+  eq Minus.condJmp() = "jne ";
+
+  public void BinaryExpr.genConditionalFlags(PrintStream out) {
+    if(eval(new ActivationRecord()) != 0) {
+      out.println("        sete %al");
+    } else {
+      out.println("        setne %al");
+    }
+  }
+  */
+
+  inh int IdDecl.paramIndex();
+  eq Program.getChild().paramIndex() = 0;
+  eq FuncDesc.getParamId(int i).paramIndex() = i + 1;
+  /**
+   * Address of local variable variable in the current stack frame.
+   */
+  syn String IdDecl.address() {
+    if (!isVariable() && !isFunction()) {
+      return ((paramIndex() + 1) * 8) + "(%rbp)";
+    } else {
+      return "-"+(localIndex() * 8) + "(%rbp)";
+    }
+  }
+
+  /**
+   * Local variable counting.
+   */
+  syn int ASTNode.numLocals() = lastNode().localIndex() - localIndex();
+
+  /**
+   * Local variable numbering.
+   */
+  syn int ASTNode.localIndex() = prevNode().localIndex();
+  eq FuncDesc.localIndex() = 0;
+  eq IdDecl.localIndex() = (isVariable()) ? prevNode().localIndex() + 1 : prevNode().localIndex();
+
+  inh ASTNode ASTNode.prevNode();
+  eq ASTNode.getChild(int i).prevNode() = prevNode(i);
+  syn ASTNode ASTNode.lastNode() = prevNode(getNumChild());
+  syn ASTNode ASTNode.prevNode(int i) = i>0 ? getChild(i-1).lastNode() : this;
+
+}

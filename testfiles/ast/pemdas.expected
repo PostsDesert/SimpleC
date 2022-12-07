@@ -1,0 +1,28 @@
+Program
+  List
+    FuncDesc
+      IdDecl ID="basefunc"
+      List
+      Block
+        List
+          VarDeclStmt
+            IdDecl ID="a"
+            Opt
+              Minus
+                ParenExpr
+                  Mul
+                    Numeral NUMERAL="5"
+                    Numeral NUMERAL="3"
+                Div
+                  Numeral NUMERAL="14"
+                  Numeral NUMERAL="2"
+          VarDeclStmt
+            IdDecl ID="b"
+            Opt
+              Plus
+                Minus
+                  Numeral NUMERAL="1"
+                  Mul
+                    Numeral NUMERAL="2"
+                    Numeral NUMERAL="3"
+                Numeral NUMERAL="4"

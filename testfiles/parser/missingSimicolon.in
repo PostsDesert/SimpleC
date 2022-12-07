@@ -1,0 +1,4 @@
+int basefunc() {
+    a = 0
+    b = 1;
+}

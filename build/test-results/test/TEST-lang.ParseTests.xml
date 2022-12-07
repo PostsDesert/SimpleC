@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="lang.ParseTests" tests="3" skipped="0" failures="0" errors="0" timestamp="2022-10-12T11:53:32" hostname="G-MacBook-Pro.local" time="0.002">
+  <properties/>
+  <testcase name="error2" classname="lang.ParseTests" time="0.001"/>
+  <testcase name="missingSimicolon" classname="lang.ParseTests" time="0.001"/>
+  <testcase name="error" classname="lang.ParseTests" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

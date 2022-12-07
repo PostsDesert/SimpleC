@@ -1,0 +1,3 @@
+int testFunc() {
+    a = 5;
+}

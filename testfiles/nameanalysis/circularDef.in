@@ -1,0 +1,8 @@
+int testFunc() {
+    int a = 0;
+    int b = 1;
+    int c = a;
+
+    b = c;
+    a = b;
+}

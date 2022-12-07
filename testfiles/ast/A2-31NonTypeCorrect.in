@@ -1,0 +1,9 @@
+int basefunc() {
+int a;
+a = (b > c) - 10;
+a = (b > c) * x;
+a = x / -(b == c);
+if (b) {
+a = 3;
+}
+}

@@ -1,0 +1,18 @@
+Program
+  List
+    FuncDesc
+      IdDecl ID="basefunc"
+      List
+        IdDecl ID="d"
+        IdDecl ID="g"
+      Block
+        List
+          FuncCallStmt
+            FuncCall
+              IdUse ID="print"
+              List
+                IdUse ID="d"
+          FuncCallStmt
+            FuncCall
+              IdUse ID="print"
+              List

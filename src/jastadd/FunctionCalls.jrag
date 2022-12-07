@@ -1,0 +1,23 @@
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Comparator;
+
+aspect FunctionCalls{
+
+  coll Set<FuncDesc> FuncDesc.functionCalls() [new TreeSet<FuncDesc>(new FuncComparator())] with add root FuncDesc;
+
+  FuncCall contributes getIdUse().decl().function()
+  to FuncDesc.functionCalls() for enclosingFunction();
+
+  inh FuncDesc FuncCall.enclosingFunction();
+  inh FuncDesc Stmt.enclosingFunction();
+
+  eq FuncDesc.getBlock().enclosingFunction() = this;
+
+  public class FuncComparator implements Comparator<FuncDesc>{
+
+    public int compare(FuncDesc func1, FuncDesc func2){
+      return func1.getFuncId().getID().compareTo(func2.getFuncId().getID());
+    }
+  }
+}

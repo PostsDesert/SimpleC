@@ -1,0 +1,11 @@
+int basefunc() {
+    while (1) {
+        if (1) {
+            return 1;
+        }
+    }
+    int a = 0;
+    while(a) {
+        return 0;
+    }
+}

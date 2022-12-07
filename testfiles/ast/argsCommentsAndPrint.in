@@ -1,0 +1,5 @@
+int basefunc(int d, int g) {
+    // Go D Guild!
+    print(d);
+    print();
+}

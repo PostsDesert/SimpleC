@@ -1,0 +1,11 @@
+aspect Reachability{
+	syn TreeSet<FuncDesc> FuncDesc.reachable() circular [new TreeSet<FuncDesc>(new FuncComparator())];
+	eq FuncDesc.reachable() {
+		TreeSet<FuncDesc> r = new TreeSet<FuncDesc>(new FuncComparator());
+  		for (FuncDesc f : functionCalls()) {
+    			r.add(f);
+    			r.addAll(f.reachable());
+  		}
+  		return r;
+ 	}
+}

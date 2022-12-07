@@ -1,0 +1,5 @@
+int main() {
+    int a = read();
+    int b = read();
+    print(a + b);
+}

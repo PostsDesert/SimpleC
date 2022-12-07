@@ -1,0 +1,7 @@
+Program
+  List
+    FuncDesc
+      IdDecl ID="funkfunc"
+      List
+      Block
+        List

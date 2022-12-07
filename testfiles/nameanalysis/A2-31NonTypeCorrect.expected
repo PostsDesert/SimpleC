@@ -1,0 +1,13 @@
+Error at line 3: Expr: Unexpected unknown type
+Error at line 3: Symbol 'b' is not declared
+Error at line 3: Symbol 'c' is not declared
+Error at line 4: Expr: Unexpected unknown type
+Error at line 4: Symbol 'b' is not declared
+Error at line 4: Symbol 'c' is not declared
+Error at line 4: Symbol 'x' is not declared
+Error at line 5: Expr: Unexpected unknown type
+Error at line 5: Symbol 'b' is not declared
+Error at line 5: Symbol 'c' is not declared
+Error at line 5: Symbol 'x' is not declared
+Error at line 6: IfStmt: Expected type 'Bool', got 'Int' instead
+Error at line 6: Symbol 'b' is not declared

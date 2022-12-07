@@ -1,0 +1,4 @@
+int basefunc() {
+    int a = (5 * 3) - 14 / 2;
+    int b = 1 - 2 * 3 + 4;
+}

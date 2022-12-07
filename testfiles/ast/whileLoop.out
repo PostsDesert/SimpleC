@@ -1,0 +1,28 @@
+Program
+  List
+    FuncDesc
+      IdDecl ID="basefunc"
+      List
+      Block
+        List
+          WhileStmt
+            Numeral NUMERAL="1"
+            Block
+              List
+                IfStmt
+                  Numeral NUMERAL="1"
+                  Block
+                    List
+                      ReturnStmt
+                        Numeral NUMERAL="1"
+                  Opt
+          VarDeclStmt
+            IdDecl ID="a"
+            Opt
+              Numeral NUMERAL="0"
+          WhileStmt
+            IdUse ID="a"
+            Block
+              List
+                ReturnStmt
+                  Numeral NUMERAL="0"

@@ -1,0 +1,158 @@
+aspect Visitor {
+    /**
+    * Visitor interface for SimpliC language. Each concrete node type must
+    * have a visit method.
+    */
+    public interface Visitor {
+        public Object visit(List node, Object data);
+        public Object visit(FuncDesc node, Object data);
+        public Object visit(Block node, Object data);
+        public Object visit(Stmt node, Object data);
+        public Object visit(AssignStmt node, Object data);
+        public Object visit(IfStmt node, Object data);
+        public Object visit(WhileStmt node, Object data);
+        public Object visit(ReturnStmt node, Object data);
+        public Object visit(FuncCallStmt node, Object data);
+        public Object visit(VarDeclStmt node, Object data);
+        public Object visit(Opt node, Object data);
+        public Object visit(Expr node, Object data);
+        public Object visit(IdDecl node, Object data);
+        public Object visit(IdUse node, Object data);
+        public Object visit(Numeral node, Object data);
+        public Object visit(ParenExpr node, Object data);
+        public Object visit(UnaryMinus node, Object data);
+        public Object visit(FuncCall node, Object data);
+        public Object visit(Program node, Object data);
+        public Object visit(Eq node, Object data);
+        public Object visit(Neq node, Object data);
+        public Object visit(Leq node, Object data);
+        public Object visit(Geq node, Object data);
+        public Object visit(Lt node, Object data);
+        public Object visit(Gt node, Object data);
+        public Object visit(Plus node, Object data);
+        public Object visit(Minus node, Object data);
+        public Object visit(Mul node, Object data);
+        public Object visit(Div node, Object data);
+        public Object visit(Mod node, Object data);
+    }
+
+	public Object ASTNode.accept(Visitor visitor, Object data) {
+		throw new Error("Visitor: accept method not available for " + getClass().getName());
+	}
+
+	public Object List.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object FuncDesc.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Block.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Stmt.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object AssignStmt.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object IfStmt.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object WhileStmt.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object ReturnStmt.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object FuncCallStmt.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object VarDeclStmt.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Opt.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Expr.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object IdDecl.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object IdUse.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Numeral.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object UnaryMinus.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object FuncCall.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Program.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Eq.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Neq.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Leq.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Geq.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Lt.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Gt.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Plus.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Minus.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Mul.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Div.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+
+    public Object Mod.accept(Visitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
+}

@@ -1,0 +1,17 @@
+Program
+  List
+    FuncDesc
+      IdDecl ID="gcd2"
+      List
+        IdDecl ID="a"
+        IdDecl ID="b"
+      Block
+        List
+          ReturnStmt
+            FuncCall
+              IdUse ID="gcd2"
+              List
+                IdUse ID="b"
+                Mod
+                  IdUse ID="a"
+                  IdUse ID="b"

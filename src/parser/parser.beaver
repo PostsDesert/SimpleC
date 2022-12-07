@@ -1,0 +1,144 @@
+%class "LangParser";
+%package "lang.ast";
+
+%embed {:
+	static public class SyntaxError extends RuntimeException { public SyntaxError(String msg) {super(msg);}}
+	// Disable syntax error recovery
+	protected void recoverFromError(Symbol token, TokenStream in) {
+		throw new SyntaxError("Cannot recover from the syntax error");
+	}
+:};
+
+%terminals INT, WHILE, IF, ELSE, RETURN;
+%terminals ASSIGN, COMMA;
+%terminals LPAREN, RPAREN, LBRACE, RBRACE;
+%terminals MUL, DIV, MOD, PLUS, MINUS;
+%terminals EQ, NEQ, LEQ, GEQ, LT, GT;
+%terminals SEMICOLON, ID, NUMERAL;
+
+%typeof program = "Program";
+
+// Lists
+%typeof func_list = "List";
+%typeof arg_list = "List";
+%typeof arg_list_opt = "List";
+%typeof param_list = "List";
+%typeof param_list_opt = "List";
+%typeof stmt_list = "List";
+
+// Function Description
+%typeof func_desc = "FuncDesc";
+%typeof func_header = "FuncHeader";
+%typeof block = "Block";
+%typeof func_id = "FuncId";
+%typeof param_id = "ParamId";
+%typeof param_stmt = "ParamId";
+
+// Statements
+%typeof stmt = "Stmt";
+%typeof assign_stmt = "AssignStmt";
+%typeof if_stmt = "IfStmt";
+%typeof while_stmt = "WhileStmt";
+%typeof return_stmt = "ReturnStmt";
+%typeof func_call_stmt = "FuncCallStmt";
+%typeof var_decl_stmt = "VarDeclStmt";
+%typeof opt_block = "Opt";
+
+// Expressions
+%typeof expr = "Expr";
+%typeof id_decl = "IdDecl";
+%typeof id_use = "IdUse";
+%typeof numeral = "Numeral";
+%typeof additive = "Expr";
+%typeof multi = "Expr";
+%typeof term = "Expr";
+%typeof compare_expr = "Expr";
+%typeof paren_expr = "ParenExpr";
+%typeof unary_minus = "UnaryMinus";
+%typeof func_call = "FuncCall";
+
+
+%goal program;
+
+program = func_list.funcs {: return new Program(funcs); :};
+
+// Function Description
+func_list = {: return new List(); :}
+            | func_list.list func_desc.func {: return list.add(func); :};
+
+func_desc = id_decl.id LPAREN param_list_opt.params RPAREN block.body {: return new FuncDesc(id, params, body); :};
+
+block = LBRACE RBRACE {: return new Block(); :} |
+        LBRACE stmt_list.stmts RBRACE {: return new Block(stmts); :};
+
+param_list_opt = {: return new List(); :}
+                 | param_list;
+
+param_list = id_decl.param {: return new List().add(param); :}
+              | param_list.list COMMA id_decl.param {: return list.add(param); :};
+
+
+// Statements
+stmt = assign_stmt | if_stmt | while_stmt | return_stmt | func_call_stmt | var_decl_stmt;
+
+assign_stmt = id_use.id ASSIGN expr.e SEMICOLON {: return new AssignStmt(id, e); :};
+
+if_stmt = IF LPAREN expr.e RPAREN block.if_true opt_block.if_false {: return new IfStmt(e, if_true, if_false); :};
+
+while_stmt = WHILE LPAREN expr.e RPAREN block.b {: return new WhileStmt(e, b); :};
+
+return_stmt = RETURN expr.e SEMICOLON {: return new ReturnStmt(e); :};
+
+func_call_stmt = func_call SEMICOLON {: return new FuncCallStmt(func_call); :};
+
+var_decl_stmt = id_decl.var SEMICOLON {: return new VarDeclStmt(var, new Opt()); :}
+                | id_decl.var ASSIGN expr.e SEMICOLON {: return new VarDeclStmt(var, new Opt(e)); :};
+
+opt_block = {: return new Opt(); :}
+            | ELSE block.block {: return new Opt(block); :};
+
+stmt_list = stmt.stmt {: return new List().add(stmt); :}
+            | stmt_list.list stmt.stmt {: return list.add(stmt); :};
+
+// Expressions
+id_decl = INT ID.id {: return new IdDecl(id); :};
+id_use = ID.id {: return new IdUse(id); :};
+numeral = NUMERAL.num {:return new Numeral(num);:};
+
+// Expression Hierarchy
+// additive refers to the lowest level of precedence (i.e. Add/Subtract)
+// multi refers to the next level of precedence (i.e. Multiply/Divide/Mod)
+// term refers to the highest level of precedence (i.e. Parentheses/Function Calls/Unary Operations/Variables/Numbers)
+
+// Comparison expressions are processed last, after the above subset
+
+expr = additive | compare_expr;
+
+additive = additive.a PLUS multi.b {: return new Plus(a, b); :}
+      | additive.a MINUS multi.b {: return new Minus(a, b); :}
+      | multi;
+
+compare_expr = additive.a EQ additive.b {: return new Eq(a, b); :}
+               | additive.a NEQ additive.b {: return new Neq(a, b); :}
+               | additive.a LEQ additive.b {: return new Leq(a, b); :}
+               | additive.a GEQ additive.b {: return new Geq(a, b); :}
+               | additive.a LT additive.b {: return new Lt(a, b); :}
+               | additive.a GT additive.b {: return new Gt(a, b); :};
+
+multi = multi.a MUL term.b {: return new Mul(a, b); :}
+       | multi.a DIV term.b {: return new Div(a, b); :}
+       | multi.a MOD term.b {: return new Mod(a, b); :}
+       | term;
+
+term = numeral | func_call | id_use | paren_expr | unary_minus;
+
+paren_expr = LPAREN expr.e RPAREN {: return new ParenExpr(e); :};
+unary_minus = MINUS term.f {: return new UnaryMinus(f); :};
+
+func_call = id_use.id LPAREN arg_list_opt.args RPAREN {: return new FuncCall(id, args); :};
+
+arg_list_opt = {: return new List(); :}
+                 | arg_list;
+
+arg_list = expr.e {: return new List().add(e); :}
+              | arg_list.list COMMA expr.e {: return list.add(e); :};

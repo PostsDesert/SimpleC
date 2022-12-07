@@ -1,0 +1,10 @@
+aspect BoolType {
+	syn nta BoolType Program.boolType() = new BoolType();
+
+	inh BoolType ASTNode.boolType();
+	eq Program.getChild().boolType() = boolType();
+
+	syn boolean Type.isBoolType() = false;
+	eq BoolType.isBoolType() = true;
+	syn String BoolType.toString() = "Bool";
+}

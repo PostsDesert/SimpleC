@@ -1,0 +1,46 @@
+Program ::= FuncDesc*;
+
+// Types and Unknowns
+abstract Type;
+IntType:Type;
+BoolType:Type;
+UnknownType:Type;
+UnknownDecl : IdDecl;
+
+// Function Description
+FuncDesc ::= FuncId:IdDecl ParamId:IdDecl* Block; //Done
+Block : Stmt ::= Stmt*; //Done
+
+// Statements
+abstract Stmt; //Done
+AssignStmt : Stmt ::= To:IdUse From:Expr;
+IfStmt : Stmt ::= Expr True:Block [False:Block]; //Done
+WhileStmt : Stmt ::= Expr Block; //Done
+ReturnStmt : Stmt ::= Expr; //Done
+FuncCallStmt : Stmt ::= FuncCall; //Done
+VarDeclStmt : Stmt ::= IdDecl [Expr];
+
+// Expressions
+abstract Expr; //Done
+IdDecl : Expr ::= <ID>; //Done
+IdUse : Expr ::= <ID>; //Done
+Numeral : Expr ::= <NUMERAL>; //Done
+FuncCall : Expr ::= IdUse Expr*; //Done
+ParenExpr : Expr ::= Expr; //Done
+UnaryMinus : Expr ::= Expr; //Done
+
+// Operation or Comparison Expressions
+abstract BinaryExpr : Expr ::= Left:Expr Right:Expr;
+Mul: BinaryExpr; //Done
+Div : BinaryExpr; //Done
+Mod : BinaryExpr;
+Plus : BinaryExpr; //Done
+Minus : BinaryExpr; //Done
+
+abstract CompExpr : Expr ::= Left:Expr Right:Expr;
+Eq : CompExpr;
+Neq  : CompExpr;
+Leq  : CompExpr;
+Geq : CompExpr;
+Lt : CompExpr;
+Gt : CompExpr;

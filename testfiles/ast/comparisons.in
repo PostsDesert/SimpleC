@@ -1,0 +1,26 @@
+int basefunc() {
+    int a = 0;
+    int b = 1;
+    int x = -1;
+
+    if (a == 0) {
+        x = 0;
+    }
+    if (b != 0) {
+        x = 1;
+    }
+    if (a >= b) {
+        x = 2;
+    }
+    if (a <= b) {
+        x = 3;
+    }
+    if (a > b) {
+        x = 4;
+    }
+    if (a < b) {
+        x = 5;
+    }
+
+    return x;
+}

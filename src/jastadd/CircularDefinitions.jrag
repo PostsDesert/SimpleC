@@ -1,0 +1,8 @@
+aspect CircularDefinitions {
+		syn boolean IdUse.isCircular() = inExprOf(decl());
+		inh boolean IdUse.inExprOf(IdDecl decl);
+		inh boolean Stmt.inExprOf(IdDecl decl);
+		eq AssignStmt.getTo().inExprOf(IdDecl decl)
+		    = getTo().getID() == decl.getID() || inExprOf(decl);
+		eq Program.getChild().inExprOf(IdDecl decl) = false;
+}

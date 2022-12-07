@@ -1,0 +1,14 @@
+Program
+  List
+    FuncDesc
+      IdDecl ID="f"
+      List
+      Block
+        List
+          VarDeclStmt
+            IdDecl ID="a"
+            Opt
+              ParenExpr
+                Eq
+                  Numeral NUMERAL="1"
+                  Numeral NUMERAL="3"
